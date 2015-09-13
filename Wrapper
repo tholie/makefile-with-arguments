@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+COM=${@%%:*}
+ARG=${@##*:}
+SCRIPT=workers/$COM.sh
+if [ -f $SCRIPT ]; then
+    $SCRIPT $ARG
+else
+    echo Befehl $COM nicht gefunden
+    echo
+    echo Mögliche Befehle sind:
+    echo
+    for command in $( ls workers ); do
+        HELPARG=$(cat workers/$command | grep "## ARGUMENT" | cut -d \{ -f 2 | cut -d \} -f 1)
+        echo - ${command%%.*}$HELPARG
+        while read helpline
+        do
+            echo -e '\t'$helpline
+        done < <(cat workers/$command | grep "## USAGE" | cut -d : -f 2)
+        echo
+    done
+fi
